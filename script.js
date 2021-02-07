@@ -12,6 +12,7 @@ var countdownTitle = "";
 var countdownDate = "";
 var countdownValue = Date;
 var countdownActive;
+var savedCountdown;
 var socend = 1000;
 var minute = socend * 60;
 var hour = minute * 60;
@@ -48,6 +49,11 @@ var updateCountdown = function (e) {
     e.preventDefault();
     countdownTitle = e.srcElement[0].value;
     countdownDate = e.srcElement[1].value;
+    savedCountdown = {
+        title: countdownTitle,
+        date: countdownDate
+    };
+    localStorage.setItem("countdown", JSON.stringify(savedCountdown));
     if (countdownDate === "") {
         alert("Please, select a date four countdown!");
     }
@@ -63,7 +69,19 @@ var reset = function () {
     clearInterval(countdownActive);
     countdownDate = "";
     countdownTitle = "";
+    localStorage.removeItem("countdown");
+};
+var restorePreviousCountdown = function () {
+    if (localStorage.getItem("countdown")) {
+        inputContainer.hidden = true;
+        savedCountdown = JSON.parse(localStorage.getItem("countdown"));
+        countdownTitle = savedCountdown.title;
+        countdownDate = savedCountdown.date;
+        countdownValue = new Date(countdownDate).getTime();
+        updateDOM();
+    }
 };
 countdownForm.addEventListener("submit", updateCountdown);
 countdownBtn.addEventListener("click", reset);
 completeBtn.addEventListener("click", reset);
+restorePreviousCountdown();
